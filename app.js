@@ -18,10 +18,6 @@
   const letterBtn = $("#letterBtn");
   const letterView = $("#letterView");
   const letterPaper = $("#letterPaper");
-  const recapView = $("#recapView");
-  const recapList = $("#recapList");
-  const recapClose = $("#recapClose");
-  const recapDone = $("#recapDone");
   const toastEl = $("#toast");
   const layer = $("#krathong-layer");
   const lanternBox = $("#lanterns");
@@ -42,20 +38,14 @@
     a: "เธอ",
     b: "เค้า",
     wish: "ให้เราอยู่ด้วยกันนานๆ",
-    wishChoice: "ให้เราอยู่ด้วยกันนานๆ",
-    typedWish: "",
     palette: 0,
     who: "",
     ready: "",
-    releasedAt: "",
   };
   const timers = [];
   let sparkTimer = null;
   let toastTimer = null;
   let heartPlaced = false;
-  let recapShown = false;
-  let letterOpened = false;
-  let recapCloseTimer = null;
 
   const later = (fn, ms) => timers.push(setTimeout(fn, ms));
   const clearTimers = () => {
@@ -1033,8 +1023,6 @@ ${flameArt}
     memoryCloseTimer = setTimeout(() => {
       memoryView.hidden = true;
       document.body.classList.remove("memory-open");
-      // ดูความทรงจำ/จดหมายจบแล้ว ค่อยโชว์สิ่งที่เธอเลือก
-      later(showRecap, 260);
     }, 350);
   }
 
@@ -1044,7 +1032,6 @@ ${flameArt}
 
   function openLetterView() {
     if (!letterView) return;
-    letterOpened = true;
     clearTimeout(letterCloseTimer);
     clearTimeout(letterOpenTimer);
     letterView.classList.remove("opened", "show-paper");
@@ -1072,52 +1059,6 @@ ${flameArt}
     letterCloseTimer = setTimeout(() => {
       letterView.hidden = true;
       if (letterPaper) letterPaper.hidden = true;
-    }, 350);
-  }
-
-  /* ── Recap: สรุปสิ่งที่เธอเลือกหลังดูครบทุกอย่าง ──── */
-  function recapRow(label, value, highlight) {
-    if (!recapList) return;
-    const row = document.createElement("div");
-    row.className = "recap-row";
-    const l = document.createElement("span");
-    l.className = "recap-label";
-    l.textContent = label;
-    const v = document.createElement("span");
-    v.className = "recap-value" + (highlight ? " wish-text" : "");
-    v.textContent = value || "-";
-    row.append(l, v);
-    recapList.appendChild(row);
-  }
-
-  function showRecap() {
-    if (!recapView || recapShown || !state.releasedAt) return;
-    recapShown = true;
-    if (recapList) recapList.textContent = "";
-    const whoLabels = { love: "กับเค้าคนนี้ไง 💗", moon: "กับพระจันทร์ 🌕", cat: "กับแมวน้อย 🐱" };
-    recapRow("อยากลอยกระทงกับใคร", whoLabels[state.who] || state.who);
-    recapRow("คำอธิษฐานข้อที่เลือก", state.wishChoice);
-    recapRow("ความพร้อม", state.ready);
-    recapRow("สีกลีบดอกไม้", (PALETTES[state.palette] || PALETTES[0]).name);
-    recapRow("เทียนบนกระทง", candlesLit >= 3 ? "จุดครบ 3 เล่ม 🕯️" : `จุดแล้ว ${candlesLit} / 3 เล่ม`);
-    recapRow("คำอธิษฐานที่เธอพิมพ์", state.typedWish, true);
-    if (letterOpened) recapRow("จดหมาย", "ได้อ่านจดหมายแล้ว 💌");
-    recapRow("เวลาที่ลอยกระทง", state.releasedAt);
-
-    clearTimeout(recapCloseTimer);
-    document.body.classList.add("memory-open");
-    recapView.hidden = false;
-    recapView.scrollTop = 0;
-    void recapView.offsetWidth;
-    recapView.classList.add("show");
-  }
-
-  function closeRecap() {
-    if (!recapView || recapView.hidden) return;
-    recapView.classList.remove("show");
-    recapCloseTimer = setTimeout(() => {
-      recapView.hidden = true;
-      document.body.classList.remove("memory-open");
     }, 350);
   }
 
@@ -1465,10 +1406,6 @@ ${flameArt}
       return;
     }
     state.wish = typed.slice(0, 140);
-    state.typedWish = state.wish;
-    state.releasedAt = new Date().toLocaleString("th-TH", {
-      year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit",
-    });
     startFloat({ music: "keep", toast: floatMessage() });
   }
 
@@ -1489,7 +1426,6 @@ ${flameArt}
         const key = btn.dataset.key;
         const group = $$(`.choice[data-key="${key}"]`, intro);
         state[key] = btn.dataset.value;
-        if (key === "wish") state.wishChoice = btn.dataset.value;
         group.forEach((b) => {
           b.classList.toggle("chosen", b === btn);
           b.disabled = true;
@@ -1542,8 +1478,6 @@ ${flameArt}
     state.a = "เธอ";
     state.b = "เค้า";
     state.wish = (state.wish || "ให้เราอยู่ด้วยกันนานๆ").slice(0, 140);
-    recapShown = false;
-    letterOpened = false;
 
     intro.classList.add("gone");
     intro.setAttribute("aria-hidden", "true");
@@ -1635,13 +1569,9 @@ ${flameArt}
       }
     });
   }
-  if (recapClose) recapClose.addEventListener("click", closeRecap);
-  if (recapDone) recapDone.addEventListener("click", closeRecap);
-
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
-    if (recapView && !recapView.hidden) closeRecap();
-    else if (letterView && !letterView.hidden) closeLetterView();
+    if (letterView && !letterView.hidden) closeLetterView();
     else if (memoryView && !memoryView.hidden) closeMemory();
   });
 
