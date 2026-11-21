@@ -1321,6 +1321,10 @@ input.invalid, textarea.invalid {
   display: block;
   width: min(320px, 100%);
   margin: 0 auto 4px;
+  padding-inline: 8px;
+  font-size: clamp(0.68rem, 3.5vw, 0.95rem);
+  letter-spacing: 0;
+  white-space: nowrap;
   text-decoration: none;
 }
 body.memory-open #hud { opacity: 0; pointer-events: none; }
@@ -1350,15 +1354,16 @@ body.memory-open #hud { opacity: 0; pointer-events: none; }
 .letter-kicker {
   display: inline-block;
   margin: 0;
-  padding: 6px 18px;
+  padding: 6px 14px;
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.66);
   box-shadow: 0 8px 22px rgba(201, 77, 127, 0.12);
   color: var(--rose);
   font-family: var(--font-display);
-  font-size: 0.92rem;
-  letter-spacing: 0.02em;
+  font-size: clamp(0.78rem, 3.6vw, 0.92rem);
+  letter-spacing: 0;
+  white-space: nowrap;
 }
 .letter-hint {
   margin: 0;
@@ -1447,7 +1452,8 @@ body.memory-open #hud { opacity: 0; pointer-events: none; }
 .letter-view.opened .letter-hint,
 .letter-view.opened .env-seal { opacity: 0; }
 .letter-view.show-paper .envelope,
-.letter-view.show-paper .letter-hint { display: none; }
+.letter-view.show-paper .letter-hint,
+.letter-view.show-paper .letter-kicker { display: none; }
 .letter-paper {
   position: relative;
   width: min(560px, 100%);
@@ -1496,8 +1502,9 @@ body.memory-open #hud { opacity: 0; pointer-events: none; }
   margin: 0 0 2px;
   color: var(--rose-deep);
   font-family: var(--font-display);
-  font-size: 1.12rem;
-  line-height: 1.3;
+  font-size: clamp(0.88rem, 4vw, 1.05rem);
+  line-height: 1.35;
+  white-space: nowrap;
 }
 .letter-paper-sub {
   margin: 0;
