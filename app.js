@@ -16,6 +16,9 @@
   const lanternBtn = $("#lanternBtn");
   const memoryBtn = $("#memoryBtn");
   const memoryView = $("#memoryView");
+  const letterBtn = $("#letterBtn");
+  const letterView = $("#letterView");
+  const letterPaper = $("#letterPaper");
   const toastEl = $("#toast");
   const layer = $("#krathong-layer");
   const lanternBox = $("#lanterns");
@@ -964,6 +967,40 @@ ${flameArt}
     }, 350);
   }
 
+  /* ── Letter envelope ─────────────────────────── */
+  let letterOpenTimer = null;
+  let letterCloseTimer = null;
+
+  function openLetterView() {
+    if (!letterView) return;
+    clearTimeout(letterCloseTimer);
+    clearTimeout(letterOpenTimer);
+    letterView.classList.remove("opened");
+    letterView.hidden = false;
+    letterView.scrollTop = 0;
+    if (letterPaper) letterPaper.hidden = true;
+    void letterView.offsetWidth;
+    letterView.classList.add("show");
+  }
+
+  function openEnvelope() {
+    if (!letterView || letterView.classList.contains("opened")) return;
+    letterView.classList.add("opened");
+    letterOpenTimer = setTimeout(() => {
+      if (letterPaper) letterPaper.hidden = false;
+    }, 620);
+  }
+
+  function closeLetterView() {
+    if (!letterView) return;
+    clearTimeout(letterOpenTimer);
+    letterView.classList.remove("show", "opened");
+    letterCloseTimer = setTimeout(() => {
+      letterView.hidden = true;
+      if (letterPaper) letterPaper.hidden = true;
+    }, 350);
+  }
+
   function heartsFromKrathongs() {
     const svgs = $$(".krathong-unit .float-art > .krathong-svg");
     svgs.forEach((svg, i) => {
@@ -1563,11 +1600,25 @@ ${flameArt}
 
   if (memoryBtn) memoryBtn.addEventListener("click", openMemory);
   const memoryClose = $("#memoryClose");
-  const memoryBack = $("#memoryBack");
   if (memoryClose) memoryClose.addEventListener("click", closeMemory);
-  if (memoryBack) memoryBack.addEventListener("click", closeMemory);
+
+  if (letterBtn) letterBtn.addEventListener("click", openLetterView);
+  const letterClose = $("#letterClose");
+  const envelope = $("#envelope");
+  if (letterClose) letterClose.addEventListener("click", closeLetterView);
+  if (envelope) {
+    envelope.addEventListener("click", openEnvelope);
+    envelope.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openEnvelope();
+      }
+    });
+  }
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && memoryView && !memoryView.hidden) closeMemory();
+    if (e.key !== "Escape") return;
+    if (letterView && !letterView.hidden) closeLetterView();
+    else if (memoryView && !memoryView.hidden) closeMemory();
   });
 
   window.addEventListener("resize", () => {
