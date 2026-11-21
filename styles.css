@@ -1252,18 +1252,34 @@ input.invalid, textarea.invalid {
   font-size: 0.9rem;
   cursor: pointer;
 }
-.memory-media { display: grid; gap: 14px; margin: 0 0 22px; }
+.memory-media {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 20px;
+}
 .memory-media img,
 .memory-media video {
   display: block;
-  width: 100%;
   border: 1px solid rgba(255, 204, 224, 0.7);
   border-radius: 14px;
   background: #fff;
 }
-.memory-media img { height: auto; object-fit: contain; }
-.memory-media video { height: auto; }
-#memoryBack { min-width: 220px; }
+.memory-media img {
+  width: 100%;
+  max-height: 340px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+.memory-media video {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: auto;
+  height: min(46vh, 360px);
+  max-width: 100%;
+  object-fit: contain;
+}
+#memoryBack { width: min(280px, 100%); margin: 0 auto; }
 body.memory-open #hud { opacity: 0; pointer-events: none; }
 
 /* ── Toast ─────────────────────────────────────── */
