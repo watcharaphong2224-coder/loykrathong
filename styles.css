@@ -490,57 +490,33 @@ body.lit .krathong-svg .flame { opacity: 1; }
 }
 body.released .tag { opacity: 1; transform: translate(-50%, 0); }
 
-/* ── Heart bond between the two krathongs ──────── */
-#bond {
+/* ── Heart floating between the two krathongs ──────── */
+#betweenHeart {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  /* เหนือป้ายชื่อ (z-index 2) และตัวกระทง เพื่อให้จุดปลายเส้นมองเห็นชัดบนกระทง */
   z-index: 3;
+  left: 50%;
+  top: 50%;
   pointer-events: none;
   opacity: 0;
+  transform: translate(-50%, -50%) scale(0.3);
+  transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.2, 1.4, 0.4, 1);
+  will-change: transform, opacity;
 }
-#bond.on { opacity: 1; }
-
-#bondPath {
-  fill: none;
-  stroke: url(#bondGrad);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-  filter: drop-shadow(0 1px 5px rgba(255, 143, 184, 0.55));
+#betweenHeart.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
-#bond.on #bondPath {
-  animation: bondDraw 1.9s cubic-bezier(0.3, 0.8, 0.3, 1) 0.1s forwards;
+#betweenHeart span {
+  display: block;
+  font-size: clamp(34px, 7vw, 64px);
+  line-height: 1;
+  color: #ff7fae;
+  text-shadow:
+    0 0 14px rgba(255, 143, 184, 0.9),
+    0 0 34px rgba(255, 143, 184, 0.55),
+    0 6px 14px rgba(232, 92, 146, 0.28);
+  animation: heartPulse 2.4s ease-in-out infinite;
 }
-
-.bond-dot {
-  fill: #fff;
-  stroke: #ff9dc1;
-  stroke-width: 1.4;
-  opacity: 0;
-}
-#bond.on .bond-dot { animation: bondFade 0.6s ease 1.15s forwards; }
-
-.bond-heart {
-  fill: #ff9dc1;
-  opacity: 0;
-  filter: drop-shadow(0 2px 5px rgba(232, 92, 146, 0.22));
-}
-.bond-heart.mid { fill: #f874a6; }
-#bond.on .bond-heart {
-  animation: bondFade 0.7s ease forwards;
-  animation-delay: calc(0.6s + var(--i, 0) * 0.16s);
-}
-.bond-heart-shape {
-  transform-box: fill-box;
-  transform-origin: 50% 55%;
-  animation: heartPulse 2.8s ease-in-out infinite;
-}
-.bond-heart.mid .bond-heart-shape { animation-duration: 2.2s; }
 
 /* clickable heart pop */
 .pop-heart {
@@ -1694,12 +1670,6 @@ body.memory-open #hud { opacity: 0; pointer-events: none; }
   18% { opacity: 1; transform: translate(-50%, -14px) scale(1.1); }
   100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), -88px) scale(0.8); }
 }
-@keyframes bondDraw {
-  to { stroke-dashoffset: 0; }
-}
-@keyframes bondFade {
-  to { opacity: 1; }
-}
 @keyframes heartPulse {
   0%, 100% { transform: scale(1); }
   42% { transform: scale(1.22); }
@@ -1826,8 +1796,7 @@ form.shake { animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
     filter: none;
   }
   .moon-glow { display: none; }
-  #bondPath,
-  .bond-heart { filter: none; }
+  #betweenHeart span { text-shadow: 0 0 12px rgba(255, 143, 184, 0.8); }
   .shimmer,
   #river::before { animation: none; }
   .lantern i {

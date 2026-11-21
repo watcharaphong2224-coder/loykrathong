@@ -22,7 +22,7 @@
   const layer = $("#krathong-layer");
   const lanternBox = $("#lanterns");
   const scene = $("#scene");
-  const bondSvg = $("#bond");
+  const betweenHeart = $("#betweenHeart");
 
   /* สีกลีบดอกไม้ 4 โทน — ใช้ทั้งฉากจริงและพรีวิวในขั้นเลือกสี */
   const PALETTES = [
@@ -45,11 +45,7 @@
   const timers = [];
   let sparkTimer = null;
   let toastTimer = null;
-  let bondOn = false;
-  let bondPath = null;
-  let bondHearts = [];
-  let bondDots = [];
-  let bondAnchors = null;
+  let heartPlaced = false;
 
   const later = (fn, ms) => timers.push(setTimeout(fn, ms));
   const clearTimers = () => {
@@ -322,10 +318,7 @@ ${flameArt}
     makeDust();
     makeFlies();
     makeConstellation();
-    if (bondOn) {
-      bondAnchors = null;
-      paintBond();
-    }
+    if (heartPlaced) placeBetweenHeart();
   }
 
   function makeStars() {
@@ -1082,9 +1075,6 @@ ${flameArt}
   }
 
   /* ── Two krathongs drift together ───────────── */
-  const HEART_PATH =
-    "M0 4.4C-1.1 3-6 -0.2 -6 -3.6C-6 -6.4 -3.2 -8 0 -5.2C3.2 -8 6 -6.4 6 -3.6C6 -0.2 1.1 3 0 4.4Z";
-
   function startTogether() {
     if (!document.body.classList.contains("released")) return;
     const ua = $('.krathong-unit[data-side="a"]', layer);
@@ -1113,7 +1103,7 @@ ${flameArt}
     document.body.classList.add("together");
 
     if (reduced) {
-      later(showBond, 120);
+      later(showBetweenHeart, 120);
       return;
     }
     // รอให้กระทงเลื่อนมาจอดสนิทก่อนค่อยขีดเส้น มิเช่นนั้นจุดปลายเส้นจะ
@@ -1123,7 +1113,7 @@ ${flameArt}
       if (shown) return;
       shown = true;
       ua.removeEventListener("transitionend", onEnd);
-      showBond();
+      showBetweenHeart();
     };
     const onEnd = (e) => {
       if (e.target === ua) reveal();
@@ -1132,45 +1122,38 @@ ${flameArt}
     later(reveal, 3600); // สำรองเผื่อ transitionend ไม่ยิง
   }
 
-  function showBond() {
-    if (!bondSvg || !document.body.classList.contains("together")) return;
+  function placeBetweenHeart() {
+    if (!betweenHeart) return;
+    const ua = $('.krathong-unit[data-side="a"]', layer);
+    const ub = $('.krathong-unit[data-side="b"]', layer);
+    const artA = ua && $('.float-art > .krathong-svg', ua);
+    const artB = ub && $('.float-art > .krathong-svg', ub);
+    if (!artA || !artB) return;
+    const ra = artA.getBoundingClientRect();
+    const rb = artB.getBoundingClientRect();
+    const x = (ra.left + ra.width / 2 + rb.left + rb.width / 2) / 2;
+    const y = (Math.max(ra.top, rb.top) + Math.min(ra.bottom, rb.bottom)) / 2;
+    betweenHeart.style.left = x.toFixed(1) + "px";
+    betweenHeart.style.top = y.toFixed(1) + "px";
+  }
 
-    bondSvg.innerHTML = `
-      <defs>
-        <linearGradient id="bondGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#ffc6dc"/>
-          <stop offset=".5" stop-color="#ff8fb8"/>
-          <stop offset="1" stop-color="#ffc6dc"/>
-        </linearGradient>
-      </defs>
-      <path id="bondPath" pathLength="100"></path>
-      <g class="bond-heart" style="--i:0"><path class="bond-heart-shape" d="${HEART_PATH}"/></g>
-      <g class="bond-heart" style="--i:1"><path class="bond-heart-shape" d="${HEART_PATH}"/></g>
-      <g class="bond-heart mid" style="--i:2"><path class="bond-heart-shape" d="${HEART_PATH}"/></g>
-      <circle id="bondDotA" class="bond-dot" r="2.8"></circle>
-      <circle id="bondDotB" class="bond-dot" r="2.8"></circle>`;
+  function showBetweenHeart() {
+    if (!betweenHeart || !document.body.classList.contains("together")) return;
 
-    bondPath = $("#bondPath", bondSvg);
-    bondHearts = $$(".bond-heart", bondSvg);
-    bondDots = [$("#bondDotA", bondSvg), $("#bondDotB", bondSvg)];
-    bondSvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    placeBetweenHeart();
+    heartPlaced = true;
+    void betweenHeart.getBoundingClientRect();
+    betweenHeart.classList.add("show");
 
-    bondOn = true;
-    bondAnchors = null;
-    captureBondAnchors();
-    paintBond();
-    void bondSvg.getBoundingClientRect();
-    bondSvg.classList.add("on");
-    // บังคับให้โปร่งใสเป็น 1 ทันที เผื่อ browser ที่ไม่เดิน CSS transition
-    bondSvg.style.opacity = "1";
-
-    const tagA = $('[data-tag="a"]', layer);
-    const tagB = $('[data-tag="b"]', layer);
-    if (tagA && tagB) {
-      const ra = tagA.getBoundingClientRect();
-      const rb = tagB.getBoundingClientRect();
+    const ua = $('.krathong-unit[data-side="a"]', layer);
+    const ub = $('.krathong-unit[data-side="b"]', layer);
+    const artA = ua && $('.float-art > .krathong-svg', ua);
+    const artB = ub && $('.float-art > .krathong-svg', ub);
+    if (artA && artB) {
+      const ra = artA.getBoundingClientRect();
+      const rb = artB.getBoundingClientRect();
       const x = (ra.left + ra.width / 2 + rb.left + rb.width / 2) / 2;
-      const y = Math.min(ra.top, rb.top) - Math.max(32, Math.min(64, W * 0.05)) + 14;
+      const y = (Math.max(ra.top, rb.top) + Math.min(ra.bottom, rb.bottom)) / 2;
       spawnHearts(x, y, 10);
       popHearts(x, y, 2);
 
@@ -1193,74 +1176,9 @@ ${flameArt}
     if (musicBtn.getAttribute("aria-pressed") === "true") Ambient.chime();
   }
 
-  // Anchor the bond to the boats themselves (not the floating name tags), and
-  // capture once after the bob animation is paused so the line stays aligned.
-  function captureBondAnchors() {
-    const ua = $('.krathong-unit[data-side="a"]', layer);
-    const ub = $('.krathong-unit[data-side="b"]', layer);
-    const artA = ua && $('.float-art > .krathong-svg', ua);
-    const artB = ub && $('.float-art > .krathong-svg', ub);
-    if (!artA || !artB) {
-      bondAnchors = null;
-      return;
-    }
-    const ra = artA.getBoundingClientRect();
-    const rb = artB.getBoundingClientRect();
-    bondAnchors = {
-      ax: ra.left + ra.width / 2,
-      ay: ra.top + 5,
-      bx: rb.left + rb.width / 2,
-      by: rb.top + 5,
-    };
-  }
-
-  function paintBond() {
-    if (!bondOn || !bondPath) return;
-    const vb = bondSvg.viewBox.baseVal;
-    if (vb.width !== W || vb.height !== H) {
-      bondSvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-    }
-    if (!bondAnchors) captureBondAnchors();
-    if (!bondAnchors) return;
-
-    const { ax, ay, bx, by } = bondAnchors;
-    const mx = (ax + bx) / 2;
-    const my = Math.min(ay, by) - Math.max(32, Math.min(64, W * 0.05));
-
-    bondPath.setAttribute(
-      "d",
-      `M${ax.toFixed(1)} ${ay.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${bx.toFixed(1)} ${by.toFixed(1)}`
-    );
-    if (bondDots[0]) {
-      bondDots[0].setAttribute("cx", ax.toFixed(1));
-      bondDots[0].setAttribute("cy", ay.toFixed(1));
-      bondDots[1].setAttribute("cx", bx.toFixed(1));
-      bondDots[1].setAttribute("cy", by.toFixed(1));
-    }
-
-    const ts = [0.26, 0.5, 0.74];
-    const scales = [0.58, 1.24, 0.58];
-    bondHearts.forEach((g, i) => {
-      const t = ts[i] || 0.5;
-      const u = 1 - t;
-      const x = u * u * ax + 2 * u * t * mx + t * t * bx;
-      const y = u * u * ay + 2 * u * t * my + t * t * by;
-      g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${scales[i] || 0.6})`);
-    });
-  }
-
-  function resetBond() {
-    bondOn = false;
-    bondAnchors = null;
-    bondPath = null;
-    bondHearts = [];
-    bondDots = [];
-    if (bondSvg) {
-      bondSvg.classList.remove("on");
-      bondSvg.style.removeProperty("opacity");
-      bondSvg.innerHTML = "";
-      bondSvg.removeAttribute("viewBox");
-    }
+  function resetBetweenHeart() {
+    heartPlaced = false;
+    if (betweenHeart) betweenHeart.classList.remove("show");
     $$(".krathong-unit", layer).forEach((u) => {
       u.style.removeProperty("--pair-x");
       u.style.removeProperty("--pair-y");
@@ -1542,7 +1460,7 @@ ${flameArt}
     intro.classList.add("gone");
     intro.setAttribute("aria-hidden", "true");
     clearTimers();
-    resetBond();
+    resetBetweenHeart();
     resetSpecial();
 
     document.body.classList.remove("released", "lit");
