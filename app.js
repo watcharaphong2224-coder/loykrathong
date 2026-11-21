@@ -278,6 +278,7 @@ ${flameArt}
   let lastFrameAt = 0;
   let animating = true;
   let rafId = null;
+  let fxWasActive = false;
 
   // One reusable glow sprite for fireflies (avoids a new gradient every frame).
   const flySprite = document.createElement("canvas");
@@ -305,7 +306,8 @@ ${flameArt}
 
   function resizeCanvas() {
     lowPower = window.innerWidth <= 640 || (navigator.hardwareConcurrency || 8) <= 4;
-    DPR = Math.min(window.devicePixelRatio || 1, lowPower ? 1.5 : 2);
+    // DPR 1 is enough for tiny stars on mobile and halves the pixels we draw.
+    DPR = Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 1.5);
     W = window.innerWidth;
     H = window.innerHeight;
     canvas.width = Math.round(W * DPR);
@@ -322,7 +324,7 @@ ${flameArt}
   }
 
   function makeStars() {
-    const n = Math.max(lowPower ? 48 : 60, Math.min(lowPower ? 110 : 170, Math.round((W * H) / (lowPower ? 12000 : 8500))));
+    const n = Math.max(lowPower ? 40 : 60, Math.min(lowPower ? 84 : 170, Math.round((W * H) / (lowPower ? 15000 : 8500))));
     stars = Array.from({ length: n }, () => {
       const big = Math.random() < 0.1;
       const y = Math.pow(Math.random(), 0.85) * H * 0.58;
@@ -360,7 +362,7 @@ ${flameArt}
   }
 
   function makeDust() {
-    const n = Math.round(Math.min(90, (W * H) / 12000));
+    const n = Math.round(Math.min(lowPower ? 45 : 90, (W * H) / (lowPower ? 20000 : 12000)));
     dust = Array.from({ length: n }, () => ({
       x: Math.random() * W,
       y: Math.pow(Math.random(), 1.15) * H * 0.5,
@@ -710,12 +712,24 @@ ${flameArt}
       rafId = requestAnimationFrame(frame);
       return;
     }
+    // หน้าความทรงจำ/จดหมายปิดทับฉากอยู่ หยุดวาดชั่วคราวแต่ยังเดิน rAF ไว้
+    if (document.body.classList.contains("memory-open") || (letterView && !letterView.hidden)) {
+      lastT = t;
+      rafId = requestAnimationFrame(frame);
+      return;
+    }
+
     lastFrameAt = t;
     const dt = Math.min(0.05, (t - lastT) / 1000 || 0);
     lastT = t;
     const time = t / 1000;
     ctx.clearRect(0, 0, W, H);
-    fx.clearRect(0, 0, W, H);
+    // เคลียร์ fx เฉพาะตอนมีอนุภาค (หรือเฟรมสุดท้ายที่อนุภาคหาย) — ส่วนใหญ่ไม่มีอะไรให้วาด
+    const fxActive = particles.length > 0 || meteors.length > 0;
+    if (fxActive || fxWasActive) {
+      fx.clearRect(0, 0, W, H);
+      fxWasActive = fxActive;
+    }
 
     drawDust(time);
 
