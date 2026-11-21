@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffeef5" />
+  <title>ลอยกระทง 💗</title>
+  <meta name="description" content="เรื่องเล่าสั้น ๆ ก่อนลอยกระทง เลือกสีกลีบดอกไม้ จุดเทียนสามเล่ม หลับตาอธิษฐาน แล้วกดลอยกระทงสีชมพูไปด้วยกันใต้พระจันทร์" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%AA%B7%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Itim&family=Prompt:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="scene">
+    <canvas id="sky" aria-hidden="true"></canvas>
+    <div class="aurora" aria-hidden="true"></div>
+    <div class="moon" aria-hidden="true">
+      <div class="moon-glow"></div>
+    </div>
+    <div class="clouds" aria-hidden="true">
+      <span class="cloud c1"></span>
+      <span class="cloud c2"></span>
+      <span class="cloud c3"></span>
+    </div>
+    <div id="lanterns" aria-hidden="true"></div>
+    <svg class="horizon" viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,220 L0,176 C120,150 240,168 360,158 C480,148 560,118 700,140 C820,159 900,168 1030,156 C1150,145 1260,160 1360,152 C1400,149 1420,152 1440,150 L1440,220 Z" fill="#f8c2d8" />
+      <path d="M0,220 L0,196 C150,182 280,198 400,190 C530,181 620,158 740,176 C860,194 960,198 1080,190 C1200,182 1320,196 1440,188 L1440,220 Z" fill="#f1afc9" />
+    </svg>
+    <div id="river">
+      <div class="moon-path" aria-hidden="true"></div>
+      <div class="shimmer" aria-hidden="true"></div>
+      <div id="krathong-layer"></div>
+    </div>
+    <div class="reeds" aria-hidden="true">
+      <svg class="reed-defs" width="0" height="0" focusable="false" aria-hidden="true">
+        <defs>
+          <g id="reedArt" fill="none" stroke-linecap="round">
+            <path d="M14 232C22 182 20 132 6 86" stroke="#c96590" stroke-width="5" opacity=".6" />
+            <path d="M30 232C40 186 42 142 34 100" stroke="#d878a4" stroke-width="4.2" opacity=".55" />
+            <path d="M47 232C54 190 58 152 53 116" stroke="#e68cb4" stroke-width="3.6" opacity=".5" />
+            <path d="M63 232C66 186 68 146 62 108" stroke="#c96590" stroke-width="3.2" opacity=".55" />
+            <path d="M78 232C88 196 97 168 102 146" stroke="#d878a4" stroke-width="2.8" opacity=".45" />
+            <path d="M96 232C100 190 102 146 97 100" stroke="#c96590" stroke-width="3.4" opacity=".4" />
+            <path d="M112 232C122 200 131 174 138 156" stroke="#e68cb4" stroke-width="2.4" opacity=".42" />
+            <path d="M128 232C136 200 140 172 147 152" stroke="#d878a4" stroke-width="2.2" opacity=".38" />
+            <path d="M34 232C46 208 60 194 78 186" stroke="#e68cb4" stroke-width="2" opacity=".3" />
+            <path d="M152 232C156 198 157 168 159 142" stroke="#c96590" stroke-width="3.2" opacity=".6" />
+            <ellipse cx="159" cy="135" rx="5.2" ry="14.5" fill="#b45c85" opacity=".55" stroke="none" />
+            <path d="M174 232C176 204 177 182 179 164" stroke="#d878a4" stroke-width="2.6" opacity=".5" />
+            <ellipse cx="179" cy="158" rx="3.9" ry="10.5" fill="#c1618c" opacity=".5" stroke="none" />
+          </g>
+        </defs>
+      </svg>
+      <svg class="reed-bed left" viewBox="0 0 190 232" preserveAspectRatio="xMinYMax meet"><use href="#reedArt" /></svg>
+      <svg class="reed-bed right" viewBox="0 0 190 232" preserveAspectRatio="xMinYMax meet"><use href="#reedArt" /></svg>
+    </div>
+    <canvas id="fx" aria-hidden="true"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+    <svg id="bond" aria-hidden="true"></svg>
+  </div>
+
+  <main>
+    <section id="intro" class="card story" data-step="cover" aria-label="ลอยกระทง">
+      <svg class="card-sprig br" viewBox="0 0 150 150" aria-hidden="true">
+        <defs>
+          <g id="sprigArt">
+            <g fill="none" stroke="#eaa5c3" stroke-width="1.5" stroke-linecap="round">
+              <path d="M148 150C126 141 110 121 101 95" opacity=".8" />
+              <path d="M120 149C107 139 97 125 92 109" opacity=".55" />
+              <path d="M149 119C138 113 128 105 121 94" opacity=".5" />
+              <path d="M101 95C96 86 94 77 95 68" opacity=".55" />
+            </g>
+            <g fill="#ffc2da">
+              <ellipse cx="104" cy="98" rx="12" ry="5.6" transform="rotate(-38 104 98)" />
+              <ellipse cx="93" cy="112" rx="11" ry="5.2" transform="rotate(24 93 112)" />
+              <ellipse cx="124" cy="92" rx="10" ry="4.8" transform="rotate(-58 124 92)" />
+              <ellipse cx="95" cy="72" rx="9" ry="4.4" transform="rotate(12 95 72)" />
+            </g>
+            <g fill="#b9d9c1" opacity=".95">
+              <ellipse cx="84" cy="129" rx="10" ry="4.6" transform="rotate(-22 84 129)" />
+              <ellipse cx="132" cy="112" rx="9" ry="4.2" transform="rotate(38 132 112)" />
+              <ellipse cx="112" cy="80" rx="8.4" ry="4" transform="rotate(-64 112 80)" />
+            </g>
+            <g fill="#fff0f6">
+              <circle cx="102" cy="93" r="4.8" />
+              <circle cx="90" cy="107" r="3.8" />
+              <circle cx="122" cy="88" r="3.4" />
+              <circle cx="95" cy="68" r="3" />
+            </g>
+            <g fill="#f874a6">
+              <circle cx="102" cy="93" r="2" />
+              <circle cx="90" cy="107" r="1.7" />
+              <circle cx="122" cy="88" r="1.5" />
+              <circle cx="95" cy="68" r="1.3" />
+            </g>
+          </g>
+        </defs>
+        <use href="#sprigArt" />
+      </svg>
+      <svg class="card-sprig tl" viewBox="0 0 150 150" aria-hidden="true">
+        <use href="#sprigArt" />
+      </svg>
+      <div class="story-stage" id="storyStage">
+        <section class="story-panel is-active" data-step="cover">
+          <div class="cover-art" aria-hidden="true">
+            <span class="cover-glow"></span>
+            <span class="cover-moon"></span>
+            <div class="cover-kraths" id="coverKraths">
+              <div class="cover-krath a"></div>
+              <span class="cover-heart">♥</span>
+              <div class="cover-krath b"></div>
+            </div>
+          </div>
+          <p class="eyebrow">คืนพิเศษของเราสองคน</p>
+          <h1 id="title">ลอยกระทง</h1>
+          <p class="lede">คืนนี้ขอพาเธอไปลอยกระทง<br />ใต้พระจันทร์สีชมพูด้วยกันนะ</p>
+          <button class="primary" type="button" data-next="who">
+            <span class="primary-icon">♡</span>เริ่มค่ำคืนของเรา
+          </button>
+
+        </section>
+
+        <section class="story-panel" data-step="who" hidden>
+          <p class="story-kicker">ก่อนลอยกระทง...</p>
+          <h2>คืนนี้เธออยากลอยกระทงกับใครมากที่สุด?</h2>
+          <div class="choices">
+            <button class="choice" type="button" data-key="who" data-value="love" data-goto="wish">
+              <span class="choice-emoji" aria-hidden="true">💗</span>
+              <span class="choice-text">กับเค้าคนนี้ไง</span>
+              <span class="choice-check" aria-hidden="true">♡</span>
+            </button>
+            <button class="choice" type="button" data-key="who" data-value="moon" data-goto="wish">
+              <span class="choice-emoji" aria-hidden="true">🌕</span>
+              <span class="choice-text">กับพระจันทร์</span>
+              <span class="choice-check" aria-hidden="true">♡</span>
+            </button>
+            <button class="choice" type="button" data-key="who" data-value="cat" data-goto="wish">
+              <span class="choice-emoji" aria-hidden="true">🐱</span>
+              <span class="choice-text">กับแมวน้อย</span>
+              <span class="choice-check" aria-hidden="true">♡</span>
+            </button>
+          </div>
+          <button class="back" type="button" data-back="cover">‹ ย้อนกลับ</button>
+        </section>
+
+        <section class="story-panel" data-step="wish" hidden>
+          <p class="story-kicker">ก่อนลอยกระทง...</p>
+          <h2>ถ้าอธิษฐานได้หนึ่งข้อ เธอจะขออะไร?</h2>
+          <div class="choices">
+            <button class="choice" type="button" data-key="wish" data-value="ให้เราอยู่ด้วยกันนานๆ" data-goto="ready">
+              <span class="choice-emoji" aria-hidden="true">💞</span>
+              <span class="choice-text">ให้เราอยู่ด้วยกันนานๆ</span>
+              <span class="choice-check" aria-hidden="true">♡</span>
+            </button>
+            <button class="choice" type="button" data-key="wish" data-value="ให้ได้กินของอร่อยทุกวัน" data-goto="ready">
+              <span class="choice-emoji" aria-hidden="true">🍡</span>
+              <span class="choice-text">ให้ได้กินของอร่อยทุกวัน</span>
+              <span class="choice-check" aria-hidden="true">♡</span>
+            </button>
+            <button class="choice" type="button" data-key="wish" data-value="ขอให้มีแต่วันดีๆ" data-goto="ready">
+              <span class="choice-emoji" aria-hidden="true">🌷</span>
+              <span class="choice-text">ขอให้มีแต่วันดีๆ</span>
+              <span class="choice-check" aria-hidden="true">♡</span>
+            </button>
+          </div>
+          <button class="back" type="button" data-back="who">‹ ย้อนกลับ</button>
+        </section>
+
+        <section class="story-panel" data-step="ready" hidden>
+          <p class="story-kicker">ก่อนลอยกระทง...</p>
+          <h2>พร้อมไปลอยกระทงด้วยกันหรือยัง?</h2>
+          <div class="choices">
+            <button class="choice" type="button" data-key="ready" data-value="พร้อมมากกก" data-goto="petals">
+              <span class="choice-emoji" aria-hidden="true">🙌</span>
+              <span class="choice-text">พร้อมมากกก</span>
+              <span class="choice-check" aria-hidden="true">♡</span>
+            </button>
+            <button class="choice" type="button" data-key="ready" data-value="พร้อมตั้งนานแล้ว" data-goto="petals">
+              <span class="choice-emoji" aria-hidden="true">✨</span>
+              <span class="choice-text">พร้อมตั้งนานแล้ว</span>
+              <span class="choice-check" aria-hidden="true">♡</span>
+            </button>
+            <button class="choice" type="button" data-key="ready" data-value="จับมือเค้าเลย" data-goto="petals">
+              <span class="choice-emoji" aria-hidden="true">🤝</span>
+              <span class="choice-text">จับมือเค้าเลย</span>
+              <span class="choice-check" aria-hidden="true">♡</span>
+            </button>
+          </div>
+          <button class="back" type="button" data-back="wish">‹ ย้อนกลับ</button>
+        </section>
+
+        <section class="story-panel" data-step="petals" hidden>
+          <p class="story-kicker">กระทงของเราสองคน</p>
+          <h2>เลือกสีกลีบดอกไม้ที่เธอชอบ</h2>
+          <div class="krathong-preview" id="krathongPreview" aria-hidden="true"></div>
+          <div class="swatches" role="group" aria-label="สีกลีบดอกไม้">
+            <button class="swatch pink chosen" type="button" data-palette="0" aria-label="ชมพูหวาน" aria-pressed="true"></button>
+            <button class="swatch peach" type="button" data-palette="1" aria-label="พีชอุ่น" aria-pressed="false"></button>
+            <button class="swatch sky" type="button" data-palette="2" aria-label="ฟ้าพาสเทล" aria-pressed="false"></button>
+            <button class="swatch lavender" type="button" data-palette="3" aria-label="ลาเวนเดอร์" aria-pressed="false"></button>
+          </div>
+          <button class="primary" type="button" data-next="candles">
+            <span class="primary-icon">♡</span>ใช้สีนี้
+          </button>
+          <button class="back" type="button" data-back="ready">‹ ย้อนกลับ</button>
+        </section>
+
+        <section class="story-panel" data-step="candles" hidden>
+          <p class="story-kicker">ก่อนลอยกระทง...</p>
+          <h2>จุดเทียนให้ครบ 3 เล่ม</h2>
+          <div class="candle-krathong" id="candleKrathong" role="group" aria-label="แตะเทียนบนกระทงเพื่อจุดไฟ"></div>
+          <p class="candle-count" id="candleCount">จุดแล้ว 0 / 3 เล่ม</p>
+          <button class="back" type="button" data-back="petals">‹ ย้อนกลับ</button>
+        </section>
+
+        <section class="story-panel" data-step="wishnote" hidden>
+          <p class="story-kicker">หลังจุดเทียน...</p>
+          <h2>หลับตาแล้วอธิษฐาน</h2>
+          <p class="wish-line">ขอให้ปีนี้และปีต่อ ๆ ไป<br />เราได้ความทรงจำดี ๆ ด้วยกันอีกเยอะเลย</p>
+          <div class="wish-note">
+            <label for="finalWish">เขียนคำอธิษฐานของเธอ <span>(ต้องเขียนก่อนไปต่อ)</span></label>
+            <textarea id="finalWish" rows="3" maxlength="140" placeholder="เขียนคำอธิษฐานของเธอที่นี่..."></textarea>
+          </div>
+          <button class="primary" type="button" id="wishNext" data-next="release" disabled>
+            <span class="primary-icon">♡</span>อธิษฐานแล้ว
+          </button>
+          <button class="back" type="button" data-back="petals">‹ ย้อนกลับ</button>
+        </section>
+
+        <section class="story-panel" data-step="release" hidden>
+          <p class="story-kicker">อีกนิดเดียว...</p>
+          <h2>ลอยกระทงด้วยกันนะ</h2>
+          <p class="release-hint">แตะปุ่มด้านล่าง</p>
+          <button class="primary" type="button" id="releaseBtn">ลอยกระทง</button>
+          <button class="back" type="button" data-back="wishnote">‹ ย้อนกลับ</button>
+        </section>
+      </div>
+
+      <div class="story-dots" id="storyDots" aria-hidden="true">
+        <i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+    </section>
+
+  </main>
+
+  <section id="hud" hidden aria-live="polite">
+    <div class="hud-inner">
+      <div class="hud-top">
+        <div class="hud-names" id="hudNames"></div>
+        <button id="musicBtn" class="round" type="button" aria-pressed="true" title="เปิด/ปิดเพลง">♪</button>
+      </div>
+      <p class="hud-wish" id="hudWish"></p>
+      <div class="hud-actions">
+        <button id="lanternBtn" class="ghost gold" type="button">🕯️ ลอยโคมไฟ</button>
+        <button id="memoryBtn" class="ghost memory" type="button" hidden>💗 ไปดูความทรงจำของเรา</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="memoryView" class="memory-view" hidden>
+    <div class="memory-card" role="dialog" aria-modal="true" aria-label="ความทรงจำของเรา">
+      <button id="memoryClose" class="memory-close" type="button" aria-label="ปิด">✕</button>
+      <div class="memory-media" aria-label="รูปและวิดีโอความทรงจำของเรา">
+        <img src="4E1418AD-56B4-48CD-936F-71B1A75D10B1.jpg" alt="ความทรงจำของเรา 1" loading="lazy" />
+        <img src="5F819B47-67D4-4246-ACD5-383AE33FE248.jpg" alt="ความทรงจำของเรา 2" loading="lazy" />
+        <video src="memory-video.mp4" controls playsinline preload="metadata" aria-label="วิดีโอความทรงจำของเรา"></video>
+      </div>
+      <button class="primary" id="memoryBack" type="button"><span class="primary-icon">♡</span>กลับไปดูกระทง</button>
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript><p style="position:fixed;inset:auto 16px 16px;z-index:50;background:#2a1d45;color:#ffe9c9;padding:14px;border-radius:12px;text-align:center">เปิด JavaScript เพื่อลอยกระทงด้วยกันนะ 🪷</p></noscript>
+  <script src="app.js"></script>
+</body>
+</html>
