@@ -498,13 +498,12 @@ body.released .tag { opacity: 1; transform: translate(-50%, 0); }
   top: 50%;
   pointer-events: none;
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0.3);
-  transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.2, 1.4, 0.4, 1);
-  will-change: transform, opacity;
+  transform: translate(-50%, -50%);
 }
+/* ไม่ใช้ transition เพื่อให้หัวใจโผล่ชัดทันทีแม้เบราว์เซอร์หน่วงแอนิเมชันตอนเปลี่ยนแท็บ */
 #betweenHeart.show {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%);
 }
 #betweenHeart span {
   display: block;
