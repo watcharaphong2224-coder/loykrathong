@@ -975,7 +975,7 @@ ${flameArt}
     if (!letterView) return;
     clearTimeout(letterCloseTimer);
     clearTimeout(letterOpenTimer);
-    letterView.classList.remove("opened");
+    letterView.classList.remove("opened", "show-paper");
     letterView.hidden = false;
     letterView.scrollTop = 0;
     if (letterPaper) letterPaper.hidden = true;
@@ -988,13 +988,15 @@ ${flameArt}
     letterView.classList.add("opened");
     letterOpenTimer = setTimeout(() => {
       if (letterPaper) letterPaper.hidden = false;
+      letterView.classList.add("show-paper");
+      letterView.scrollTop = 0;
     }, 620);
   }
 
   function closeLetterView() {
     if (!letterView) return;
     clearTimeout(letterOpenTimer);
-    letterView.classList.remove("show", "opened");
+    letterView.classList.remove("show", "opened", "show-paper");
     letterCloseTimer = setTimeout(() => {
       letterView.hidden = true;
       if (letterPaper) letterPaper.hidden = true;
