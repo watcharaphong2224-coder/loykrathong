@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Itim&family=Prompt:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="preload" as="image" href="memory-1.jpg" fetchpriority="high" />
   <link rel="preload" as="image" href="memory-2.jpg" fetchpriority="high" />
-  <link rel="stylesheet" href="styles.css?v=24" />
+  <link rel="stylesheet" href="styles.css?v=25" />
 </head>
 <body>
   <div id="scene">
@@ -332,8 +332,22 @@
     </div>
   </div>
 
+  <div id="recapView" class="memory-view" hidden>
+    <div class="memory-card recap-card" role="dialog" aria-modal="true" aria-label="สิ่งที่เธอเลือกในคืนนี้">
+      <button id="recapClose" class="memory-close" type="button" aria-label="ปิด">✕</button>
+      <header class="memory-header">
+        <p class="story-kicker">เรื่องของเธอในคืนนี้</p>
+        <h2>สิ่งที่เธอเลือก ♡</h2>
+        <p class="memory-sub">เก็บไว้อ่านอีกได้เสมอนะ</p>
+      </header>
+      <div class="recap-list" id="recapList"></div>
+      <p class="memory-foot">ขอบคุณที่อยู่ตรงนี้กับเค้านะ 💗</p>
+      <button class="primary" id="recapDone" type="button">เสร็จแล้ว ♡</button>
+    </div>
+  </div>
+
   <div id="toast" role="status" aria-live="polite"></div>
   <noscript><p style="position:fixed;inset:auto 16px 16px;z-index:50;background:#2a1d45;color:#ffe9c9;padding:14px;border-radius:12px;text-align:center">เปิด JavaScript เพื่อลอยกระทงด้วยกันนะ 🪷</p></noscript>
-  <script src="app.js?v=24"></script>
+  <script src="app.js?v=25"></script>
 </body>
 </html>
