@@ -943,16 +943,24 @@ ${flameArt}
   function openMemory() {
     if (!memoryView) return;
     clearTimeout(memoryCloseTimer);
+    document.body.classList.add("memory-open");
     memoryView.hidden = false;
+    memoryView.scrollTop = 0;
     void memoryView.offsetWidth;
     memoryView.classList.add("show");
   }
 
   function closeMemory() {
     if (!memoryView) return;
+    const video = $("video", memoryView);
+    if (video) {
+      video.pause();
+      video.currentTime = 0;
+    }
     memoryView.classList.remove("show");
     memoryCloseTimer = setTimeout(() => {
       memoryView.hidden = true;
+      document.body.classList.remove("memory-open");
     }, 350);
   }
 

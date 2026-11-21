@@ -1209,15 +1209,15 @@ input.invalid, textarea.invalid {
     0 0 80px rgba(255, 186, 124, 0.34);
 }
 
-/* ── Memory view ───────────────────────────────── */
+/* ── Memory page (full screen) ─────────────────── */
 .memory-view {
   position: fixed;
   inset: 0;
   z-index: 50;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: rgba(58, 26, 48, 0.42);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  background: linear-gradient(165deg, #fff6fa 0%, #ffe4f0 48%, #ffd6e8 100%);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease;
@@ -1226,34 +1226,33 @@ input.invalid, textarea.invalid {
 .memory-view[hidden] { display: none; }
 .memory-card {
   position: relative;
-  width: min(430px, 100%);
-  max-height: calc(100dvh - 40px);
-  overflow-y: auto;
-  padding: 52px 22px 22px;
-  border: 1px solid rgba(255, 255, 255, 0.92);
-  border-radius: 26px;
-  background: linear-gradient(160deg, #ffffff, #ffedf5);
-  box-shadow: 0 30px 80px rgba(78, 26, 55, 0.35);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 720px;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 66px 16px calc(26px + env(safe-area-inset-bottom));
   text-align: center;
-  transform: translateY(14px) scale(0.98);
+  transform: translateY(14px);
   transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .memory-view.show .memory-card { transform: none; }
 .memory-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 30px;
-  height: 30px;
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top));
+  right: 14px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border: 1px solid var(--pink-200);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.9);
   color: var(--rose);
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   cursor: pointer;
 }
-.memory-media { display: grid; gap: 10px; margin: 0 0 16px; }
+.memory-media { display: grid; gap: 14px; margin: 0 0 22px; }
 .memory-media img,
 .memory-media video {
   display: block;
@@ -1262,8 +1261,10 @@ input.invalid, textarea.invalid {
   border-radius: 14px;
   background: #fff;
 }
-.memory-media img { max-height: 230px; object-fit: cover; }
-.memory-media video { max-height: 260px; }
+.memory-media img { height: auto; object-fit: contain; }
+.memory-media video { height: auto; }
+#memoryBack { min-width: 220px; }
+body.memory-open #hud { opacity: 0; pointer-events: none; }
 
 /* ── Toast ─────────────────────────────────────── */
 #toast {
