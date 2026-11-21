@@ -10,6 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Itim&family=Prompt:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="memory-1.jpg" fetchpriority="high" />
+  <link rel="preload" as="image" href="memory-2.jpg" fetchpriority="high" />
   <link rel="stylesheet" href="styles.css?v=5" />
 </head>
 <body>
@@ -273,8 +275,8 @@
         <p class="memory-sub">🪷 เก็บภาพและเสียงจากคืนนี้ไว้ตรงนี้นะ</p>
       </header>
       <div class="memory-media" aria-label="รูปและวิดีโอความทรงจำของเรา">
-        <img src="4E1418AD-56B4-48CD-936F-71B1A75D10B1.jpg" alt="ความทรงจำของเรา 1" loading="lazy" />
-        <img src="5F819B47-67D4-4246-ACD5-383AE33FE248.jpg" alt="ความทรงจำของเรา 2" loading="lazy" />
+        <img src="memory-1.jpg" alt="ความทรงจำของเรา 1" loading="eager" fetchpriority="high" decoding="async" />
+        <img src="memory-2.jpg" alt="ความทรงจำของเรา 2" loading="eager" fetchpriority="high" decoding="async" />
         <video src="memory-video.mp4" controls playsinline preload="metadata" aria-label="วิดีโอความทรงจำของเรา"></video>
       </div>
       <p class="memory-foot">ขอให้ความทรงจำนี้เป็นของเราตลอดไป ♡</p>
