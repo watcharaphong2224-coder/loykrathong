@@ -723,6 +723,8 @@ ${flameArt}
     const dt = Math.min(0.05, (t - lastT) / 1000 || 0);
     lastT = t;
     const time = t / 1000;
+    // กระทงยังโคลงต่อหลังหัวใจโผล่ — อัปเดตตำแหน่งทุกเฟรมให้หัวใจอยู่กลางเสมอ
+    if (heartPlaced) placeBetweenHeart();
     ctx.clearRect(0, 0, W, H);
     // เคลียร์ fx เฉพาะตอนมีอนุภาค (หรือเฟรมสุดท้ายที่อนุภาคหาย) — ส่วนใหญ่ไม่มีอะไรให้วาด
     const fxActive = particles.length > 0 || meteors.length > 0;
