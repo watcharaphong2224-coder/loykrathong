@@ -1136,19 +1136,31 @@ ${flameArt}
     later(reveal, 3600); // สำรองเผื่อ transitionend ไม่ยิง
   }
 
-  function placeBetweenHeart() {
-    if (!betweenHeart) return;
+  // viewBox กระทงคือ 0 0 260 210 แต่ตัวลำกระทงอยู่ที่ y≈150 (กลาง SVG คือ 105)
+  // ถ้าใช้กลาง SVG หัวใจจะลอยสูงเหนือเทียน — ต้องใช้กลางลำกระทงจริง ๆ
+  function heartAnchor() {
     const ua = $('.krathong-unit[data-side="a"]', layer);
     const ub = $('.krathong-unit[data-side="b"]', layer);
     const artA = ua && $('.float-art > .krathong-svg', ua);
     const artB = ub && $('.float-art > .krathong-svg', ub);
-    if (!artA || !artB) return;
+    if (!artA || !artB) return null;
     const ra = artA.getBoundingClientRect();
     const rb = artB.getBoundingClientRect();
-    const x = (ra.left + ra.width / 2 + rb.left + rb.width / 2) / 2;
-    const y = (Math.max(ra.top, rb.top) + Math.min(ra.bottom, rb.bottom)) / 2;
-    betweenHeart.style.left = x.toFixed(1) + "px";
-    betweenHeart.style.top = y.toFixed(1) + "px";
+    const bowl = (r) => r.top + r.height * (150 / 210);
+    return {
+      x: (ra.left + ra.width / 2 + rb.left + rb.width / 2) / 2,
+      y: (bowl(ra) + bowl(rb)) / 2,
+      ra,
+      rb,
+    };
+  }
+
+  function placeBetweenHeart() {
+    if (!betweenHeart) return;
+    const a = heartAnchor();
+    if (!a) return;
+    betweenHeart.style.left = a.x.toFixed(1) + "px";
+    betweenHeart.style.top = a.y.toFixed(1) + "px";
   }
 
   function showBetweenHeart() {
@@ -1159,15 +1171,9 @@ ${flameArt}
     void betweenHeart.getBoundingClientRect();
     betweenHeart.classList.add("show");
 
-    const ua = $('.krathong-unit[data-side="a"]', layer);
-    const ub = $('.krathong-unit[data-side="b"]', layer);
-    const artA = ua && $('.float-art > .krathong-svg', ua);
-    const artB = ub && $('.float-art > .krathong-svg', ub);
-    if (artA && artB) {
-      const ra = artA.getBoundingClientRect();
-      const rb = artB.getBoundingClientRect();
-      const x = (ra.left + ra.width / 2 + rb.left + rb.width / 2) / 2;
-      const y = (Math.max(ra.top, rb.top) + Math.min(ra.bottom, rb.bottom)) / 2;
+    const a = heartAnchor();
+    if (a) {
+      const { x, y, ra, rb } = a;
       spawnHearts(x, y, 10);
       popHearts(x, y, 2);
 
