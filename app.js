@@ -1111,7 +1111,25 @@ ${flameArt}
     ub.style.setProperty("--pair-y", (-lift - push).toFixed(1) + "px");
 
     document.body.classList.add("together");
-    later(showBond, reduced ? 120 : 3050);
+
+    if (reduced) {
+      later(showBond, 120);
+      return;
+    }
+    // รอให้กระทงเลื่อนมาจอดสนิทก่อนค่อยขีดเส้น มิเช่นนั้นจุดปลายเส้นจะ
+    // ถูกจับตอนยังเคลื่อนที่ แล้วเลยหลุดจากกระทงตอนtransitionจบ
+    let shown = false;
+    const reveal = () => {
+      if (shown) return;
+      shown = true;
+      ua.removeEventListener("transitionend", onEnd);
+      showBond();
+    };
+    const onEnd = (e) => {
+      if (e.target === ua) reveal();
+    };
+    ua.addEventListener("transitionend", onEnd);
+    later(reveal, 3600); // สำรองเผื่อ transitionend ไม่ยิง
   }
 
   function showBond() {
@@ -1143,6 +1161,8 @@ ${flameArt}
     paintBond();
     void bondSvg.getBoundingClientRect();
     bondSvg.classList.add("on");
+    // บังคับให้โปร่งใสเป็น 1 ทันที เผื่อ browser ที่ไม่เดิน CSS transition
+    bondSvg.style.opacity = "1";
 
     const tagA = $('[data-tag="a"]', layer);
     const tagB = $('[data-tag="b"]', layer);
@@ -1237,6 +1257,7 @@ ${flameArt}
     bondDots = [];
     if (bondSvg) {
       bondSvg.classList.remove("on");
+      bondSvg.style.removeProperty("opacity");
       bondSvg.innerHTML = "";
       bondSvg.removeAttribute("viewBox");
     }
