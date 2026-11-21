@@ -1255,7 +1255,7 @@ input.invalid, textarea.invalid {
 .memory-header,
 .memory-media,
 .memory-foot,
-.memory-letter { position: relative; z-index: 1; }
+#letterBtn { position: relative; z-index: 1; }
 .memory-header { margin: 0 0 18px; }
 .memory-header .story-kicker { margin-bottom: 4px; }
 .memory-card h2 {
@@ -1317,12 +1317,11 @@ input.invalid, textarea.invalid {
   max-width: 100%;
   object-fit: contain;
 }
-.memory-letter {
+#letterBtn {
+  display: block;
+  width: min(320px, 100%);
   margin: 0 auto 4px;
-  color: var(--rose-deep);
-  font-family: var(--font-display);
-  font-size: clamp(0.9rem, 3vw, 1.05rem);
-  line-height: 1.5;
+  text-decoration: none;
 }
 body.memory-open #hud { opacity: 0; pointer-events: none; }
 
