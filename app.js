@@ -1173,22 +1173,24 @@ ${flameArt}
     if (musicBtn.getAttribute("aria-pressed") === "true") Ambient.chime();
   }
 
-  // Capture the endpoints once. Reading bounding boxes every frame made the
-  // line chase the krathongs' bob animation (and forced a layout each frame).
+  // Anchor the bond to the boats themselves (not the floating name tags), and
+  // capture once after the bob animation is paused so the line stays aligned.
   function captureBondAnchors() {
-    const tagA = $('[data-tag="a"]', layer);
-    const tagB = $('[data-tag="b"]', layer);
-    if (!tagA || !tagB) {
+    const ua = $('.krathong-unit[data-side="a"]', layer);
+    const ub = $('.krathong-unit[data-side="b"]', layer);
+    const artA = ua && $('.float-art > .krathong-svg', ua);
+    const artB = ub && $('.float-art > .krathong-svg', ub);
+    if (!artA || !artB) {
       bondAnchors = null;
       return;
     }
-    const ra = tagA.getBoundingClientRect();
-    const rb = tagB.getBoundingClientRect();
+    const ra = artA.getBoundingClientRect();
+    const rb = artB.getBoundingClientRect();
     bondAnchors = {
       ax: ra.left + ra.width / 2,
-      ay: ra.top + 1,
+      ay: ra.top + 5,
       bx: rb.left + rb.width / 2,
-      by: rb.top + 1,
+      by: rb.top + 5,
     };
   }
 

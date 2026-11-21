@@ -372,6 +372,8 @@ button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 body.together .krathong-unit {
   translate: var(--pair-x, 0px) var(--pair-y, 0px);
 }
+/* เมื่อกระทงมาชิดกัน ให้หยุดโคลงเพื่อให้เส้นเชื่อมตรงกับตัวกระทงพอดี */
+body.together .float-wrap { animation-play-state: paused; }
 body:not(.released) .krathong-unit {
   opacity: 0;
   transform: translate(-50%, 190px) scale(0.85);
