@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Itim&family=Prompt:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="preload" as="image" href="memory-1.jpg" fetchpriority="high" />
   <link rel="preload" as="image" href="memory-2.jpg" fetchpriority="high" />
-  <link rel="stylesheet" href="styles.css?v=26" />
+  <link rel="stylesheet" href="styles.css?v=27" />
 </head>
 <body>
   <div id="scene">
@@ -233,6 +233,7 @@
           <div class="wish-note">
             <label for="finalWish">เขียนคำอธิษฐานของเธอ <span>(ต้องเขียนก่อนไปต่อ)</span></label>
             <textarea id="finalWish" rows="3" maxlength="140" placeholder="เขียนคำอธิษฐานของเธอที่นี่..."></textarea>
+            <p class="wish-send-note">คำอธิษฐานนี้จะส่งให้เค้านะ ♡</p>
           </div>
           <button class="primary" type="button" id="wishNext" data-next="release" disabled>
             <span class="primary-icon">♡</span>อธิษฐานแล้ว
@@ -334,6 +335,6 @@
 
   <div id="toast" role="status" aria-live="polite"></div>
   <noscript><p style="position:fixed;inset:auto 16px 16px;z-index:50;background:#2a1d45;color:#ffe9c9;padding:14px;border-radius:12px;text-align:center">เปิด JavaScript เพื่อลอยกระทงด้วยกันนะ 🪷</p></noscript>
-  <script src="app.js?v=26"></script>
+  <script src="app.js?v=27"></script>
 </body>
 </html>

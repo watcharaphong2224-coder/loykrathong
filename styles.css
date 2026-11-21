@@ -994,6 +994,12 @@ input.invalid, textarea.invalid {
 }
 .wish-note label span { color: var(--pink-400); }
 .wish-note textarea { min-height: 70px; }
+.wish-send-note {
+  margin: 6px 0 0;
+  font-size: 0.72rem;
+  color: var(--pink-400);
+  text-align: right;
+}
 .release-hint {
   margin: 0 0 18px;
   font-size: 0.86rem;

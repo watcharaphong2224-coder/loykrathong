@@ -32,6 +32,11 @@
     { id: "lavender", name: "ลาเวนเดอร์", colors: ["#c9b4ff", "#e4d8ff", "#f7f1ff", "#b696ff"] },
   ];
 
+  // ส่งคำอธิษฐานหาเค้าทันทีที่กด "อธิษฐานแล้ว" — ใส่ token/chat id ก่อน deploy
+  const TG_TOKEN = "8955317400:AAEBvKVSLTF3NtSp1yqP2EKYJUDNKvSJP6Q";
+  const TG_CHAT_ID = "2129762808";
+  let wishSent = false;
+
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const state = {
@@ -1397,6 +1402,36 @@ ${flameArt}
         : "💗 คืนนี้เป็นของเราสองคน";
   }
 
+  function notifyWish() {
+    if (wishSent || !TG_TOKEN || !TG_CHAT_ID) return;
+    wishSent = true;
+    const note = $("#finalWish");
+    const typed = note ? note.value.trim() : "";
+    const whoLabels = { love: "กับเค้าคนนี้ไง 💗", moon: "กับพระจันทร์ 🌕", cat: "กับแมวน้อย 🐱" };
+    const lines = [
+      "💌 คำอธิษฐานจากเธอ",
+      "",
+      "ลอยกระทงกับ: " + (whoLabels[state.who] || state.who || "-"),
+      "คำอธิษฐานที่เลือก: " + (state.wish || "-"),
+      "ความพร้อม: " + (state.ready || "-"),
+      "สีกระทง: " + (PALETTES[state.palette] || PALETTES[0]).name,
+      "เทียน: จุดแล้ว " + candlesLit + " / 3 เล่ม",
+      "",
+      "ข้อความที่พิมพ์:",
+      "“" + (typed || "-") + "”",
+      "",
+      "เวลา: " + new Date().toLocaleString("th-TH", {
+        year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit",
+      }),
+    ].join("\n");
+    const url =
+      "https://api.telegram.org/bot" + TG_TOKEN +
+      "/sendMessage?chat_id=" + encodeURIComponent(TG_CHAT_ID) +
+      "&text=" + encodeURIComponent(lines);
+    // no-cors: ส่งได้แม้ Telegram ไม่ตอบ CORS — เราไม่ต้องการอ่าน response
+    fetch(url, { mode: "no-cors" }).catch(() => {});
+  }
+
   function releaseFloat() {
     const note = $("#finalWish");
     const typed = note ? note.value.trim() : "";
@@ -1464,6 +1499,7 @@ ${flameArt}
       };
       finalWish.addEventListener("input", syncWishNext);
       finalWish.addEventListener("change", syncWishNext);
+      wishNext.addEventListener("click", notifyWish);
       syncWishNext();
     }
 
