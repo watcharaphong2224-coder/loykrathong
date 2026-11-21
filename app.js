@@ -277,6 +277,25 @@ ${flameArt}
   const ctx = canvas.getContext("2d");
   const fxCanvas = $("#fx");
   const fx = fxCanvas.getContext("2d");
+  // Mobile / low-core devices get a lighter rendering profile.
+  let lowPower = false;
+  let lastFrameAt = 0;
+  let animating = true;
+  let rafId = null;
+
+  // One reusable glow sprite for fireflies (avoids a new gradient every frame).
+  const flySprite = document.createElement("canvas");
+  flySprite.width = flySprite.height = 96;
+  {
+    const fc = flySprite.getContext("2d");
+    const fg = fc.createRadialGradient(48, 48, 0, 48, 48, 48);
+    fg.addColorStop(0, "rgba(255, 244, 220, 1)");
+    fg.addColorStop(0.38, "rgba(255, 205, 224, 0.45)");
+    fg.addColorStop(1, "rgba(255, 205, 224, 0)");
+    fc.fillStyle = fg;
+    fc.fillRect(0, 0, 96, 96);
+  }
+
   let W = 0, H = 0, DPR = 1;
   let stars = [];
   let dust = [];
@@ -289,7 +308,8 @@ ${flameArt}
   const meteors = [];
 
   function resizeCanvas() {
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    lowPower = window.innerWidth <= 640 || (navigator.hardwareConcurrency || 8) <= 4;
+    DPR = Math.min(window.devicePixelRatio || 1, lowPower ? 1.5 : 2);
     W = window.innerWidth;
     H = window.innerHeight;
     canvas.width = Math.round(W * DPR);
@@ -305,11 +325,12 @@ ${flameArt}
   }
 
   function makeStars() {
-    const n = Math.max(60, Math.min(170, Math.round((W * H) / 8500)));
+    const n = Math.max(lowPower ? 48 : 60, Math.min(lowPower ? 110 : 170, Math.round((W * H) / (lowPower ? 12000 : 8500))));
     stars = Array.from({ length: n }, () => {
       const big = Math.random() < 0.1;
       const y = Math.pow(Math.random(), 0.85) * H * 0.58;
-      return {
+      const warm = Math.random() < 0.32;
+      const s = {
         x: Math.random() * W,
         y,
         r: big ? 1.15 + Math.random() * 1.05 : 0.45 + Math.random() * 0.9,
@@ -317,8 +338,27 @@ ${flameArt}
         speed: 0.55 + Math.random() * 1.9,
         base: (0.32 + Math.random() * 0.5) * (1 - (y / (H * 0.58)) * 0.35),
         big,
-        warm: Math.random() < 0.32,
+        warm,
       };
+      // Cache gradients once per resize instead of rebuilding them on every frame.
+      if (big && !lowPower) {
+        const tint = warm ? "255, 246, 226" : "255, 255, 255";
+        s.glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 9);
+        s.glow.addColorStop(0, `rgba(${tint},0.6)`);
+        s.glow.addColorStop(0.35, "rgba(255, 214, 232, 0.24)");
+        s.glow.addColorStop(1, "rgba(255, 214, 232, 0)");
+        const len = s.r * 10;
+        s.flareLen = len;
+        s.flareH = ctx.createLinearGradient(s.x - len, s.y, s.x + len, s.y);
+        s.flareH.addColorStop(0, "rgba(255,255,255,0)");
+        s.flareH.addColorStop(0.5, `rgba(${tint},0.9)`);
+        s.flareH.addColorStop(1, "rgba(255,255,255,0)");
+        s.flareV = ctx.createLinearGradient(s.x, s.y - len * 1.3, s.x, s.y + len * 1.3);
+        s.flareV.addColorStop(0, "rgba(255,255,255,0)");
+        s.flareV.addColorStop(0.5, `rgba(${tint},0.9)`);
+        s.flareV.addColorStop(1, "rgba(255,255,255,0)");
+      }
+      return s;
     });
   }
 
@@ -419,10 +459,12 @@ ${flameArt}
       ctx.beginPath();
       ctx.arc(x, y, 1.15 + tw * 0.7, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(255, 255, 255, ${0.4 + 0.5 * tw})`;
-      ctx.shadowColor = "rgba(255, 170, 205, 0.9)";
-      ctx.shadowBlur = 7;
+      if (!lowPower) {
+        ctx.shadowColor = "rgba(255, 170, 205, 0.9)";
+        ctx.shadowBlur = 7;
+      }
       ctx.fill();
-      ctx.shadowBlur = 0;
+      if (!lowPower) ctx.shadowBlur = 0;
     }
   }
 
@@ -431,14 +473,10 @@ ${flameArt}
       const x = f.x + Math.sin(time * 0.55 + f.phase) * f.amp;
       const y = f.y + Math.cos(time * 0.42 + f.phase * 1.3) * f.amp * 0.45;
       const a = f.base * (0.3 + 0.7 * (0.5 + 0.5 * Math.sin(time * f.speed + f.phase)));
-      const g = ctx.createRadialGradient(x, y, 0, x, y, f.r * 6);
-      g.addColorStop(0, `rgba(255, 244, 220, ${a})`);
-      g.addColorStop(0.38, `rgba(255, 205, 224, ${a * 0.45})`);
-      g.addColorStop(1, "rgba(255, 205, 224, 0)");
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(x, y, f.r * 6, 0, Math.PI * 2);
-      ctx.fill();
+      const size = f.r * 12;
+      ctx.globalAlpha = a;
+      ctx.drawImage(flySprite, x - size / 2, y - size / 2, size, size);
+      ctx.globalAlpha = 1;
       ctx.beginPath();
       ctx.arc(x, y, f.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(255, 252, 238, ${Math.min(1, a * 2.1)})`;
@@ -646,25 +684,36 @@ ${flameArt}
         fx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
         fx.fillStyle = p.color;
         fx.globalAlpha = Math.max(0, alpha);
-        fx.shadowColor = p.color;
-        fx.shadowBlur = 9;
+        if (!lowPower) {
+          fx.shadowColor = p.color;
+          fx.shadowBlur = 9;
+        }
         fx.fill();
-        fx.shadowBlur = 0;
+        if (!lowPower) fx.shadowBlur = 0;
       } else {
         fx.beginPath();
         fx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
         fx.fillStyle = p.color;
         fx.globalAlpha = Math.max(0, alpha);
-        fx.shadowColor = "rgba(255,170,205,.9)";
-        fx.shadowBlur = 8;
+        if (!lowPower) {
+          fx.shadowColor = "rgba(255,170,205,.9)";
+          fx.shadowBlur = 8;
+        }
         fx.fill();
-        fx.shadowBlur = 0;
+        if (!lowPower) fx.shadowBlur = 0;
       }
     }
     fx.globalAlpha = 1;
   }
 
   function frame(t) {
+    if (!animating) return;
+    // Cap to ~45fps on phones/low-core devices; the eye cannot tell, the battery can.
+    if (lowPower && t - lastFrameAt < 1000 / 45) {
+      rafId = requestAnimationFrame(frame);
+      return;
+    }
+    lastFrameAt = t;
     const dt = Math.min(0.05, (t - lastT) / 1000 || 0);
     lastT = t;
     const time = t / 1000;
@@ -677,38 +726,36 @@ ${flameArt}
       const tw = 0.5 + 0.5 * Math.sin(time * s.speed + s.phase);
       const a = s.base * (0.34 + 0.66 * tw * tw);
       const tint = s.warm ? "255, 246, 226" : "255, 255, 255";
-      if (s.big) {
-        const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 9);
-        g.addColorStop(0, `rgba(${tint},${a * 0.6})`);
-        g.addColorStop(0.35, `rgba(255, 214, 232,${a * 0.24})`);
-        g.addColorStop(1, "rgba(255, 214, 232,0)");
-        ctx.fillStyle = g;
+      if (s.big && s.glow) {
+        ctx.globalAlpha = a;
+        ctx.fillStyle = s.glow;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r * 9, 0, Math.PI * 2);
         ctx.fill();
 
-        // Four-point twinkle flare
+        // Four-point twinkle flare (gradients cached at resize time)
         const len = s.r * (5.5 + 4.5 * tw);
-        const gw = ctx.createLinearGradient(s.x - len, s.y, s.x + len, s.y);
-        gw.addColorStop(0, "rgba(255,255,255,0)");
-        gw.addColorStop(0.5, `rgba(${tint},${Math.min(1, a * 0.9)})`);
-        gw.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.strokeStyle = gw;
+        ctx.globalAlpha = Math.min(1, a * 0.9);
+        ctx.strokeStyle = s.flareH;
         ctx.lineWidth = Math.max(0.6, s.r * 0.42);
         ctx.lineCap = "round";
         ctx.beginPath();
         ctx.moveTo(s.x - len, s.y);
         ctx.lineTo(s.x + len, s.y);
         ctx.stroke();
-        const gh = ctx.createLinearGradient(s.x, s.y - len * 1.3, s.x, s.y + len * 1.3);
-        gh.addColorStop(0, "rgba(255,255,255,0)");
-        gh.addColorStop(0.5, `rgba(${tint},${Math.min(1, a * 0.9)})`);
-        gh.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.strokeStyle = gh;
+        ctx.strokeStyle = s.flareV;
         ctx.beginPath();
         ctx.moveTo(s.x, s.y - len * 1.3);
         ctx.lineTo(s.x, s.y + len * 1.3);
         ctx.stroke();
+        ctx.globalAlpha = 1;
+      } else if (s.big && lowPower) {
+        ctx.globalAlpha = Math.min(1, a * 0.45);
+        ctx.fillStyle = `rgba(${tint},0.5)`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 2.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
       }
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
@@ -790,7 +837,7 @@ ${flameArt}
     updateParticles(dt);
     drawParticles();
     if (bondOn) paintBond();
-    requestAnimationFrame(frame);
+    rafId = requestAnimationFrame(frame);
   }
 
   /* ── Ambient audio ──────────────────────────── */
@@ -1628,10 +1675,14 @@ ${flameArt}
     window.__canvasResize = setTimeout(resizeCanvas, 180);
   });
 
-  // Pause heavy canvas work while the tab is hidden.
+  // Stop the canvas loop completely while the tab is hidden.
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
+    animating = !document.hidden;
+    if (animating) {
+      cancelAnimationFrame(rafId);
       lastT = 0;
+      lastFrameAt = 0;
+      rafId = requestAnimationFrame(frame);
     }
   });
 
@@ -1641,7 +1692,7 @@ ${flameArt}
     setupKrathongs();
     setupLanterns();
     resizeCanvas();
-    requestAnimationFrame(frame);
+    rafId = requestAnimationFrame(frame);
 
     // ไม่จำค่าฟอร์มเก่า — เปิดมาให้ช่องว่างเสมอ
     try {
