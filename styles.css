@@ -1275,7 +1275,7 @@ input.invalid, textarea.invalid {
   grid-column: 1 / -1;
   justify-self: center;
   width: auto;
-  height: min(46vh, 360px);
+  height: min(62vh, 440px);
   max-width: 100%;
   object-fit: contain;
 }
