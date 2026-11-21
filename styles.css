@@ -1823,6 +1823,8 @@ form.shake { animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
     filter: none;
   }
   .moon-glow { display: none; }
+  #bondPath,
+  .bond-heart { filter: none; }
   .shimmer,
   #river::before { animation: none; }
   .lantern i {

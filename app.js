@@ -13,7 +13,6 @@
   const hudNames = $("#hudNames");
   const hudWish = $("#hudWish");
   const musicBtn = $("#musicBtn");
-  const lanternBtn = $("#lanternBtn");
   const memoryBtn = $("#memoryBtn");
   const memoryView = $("#memoryView");
   const letterBtn = $("#letterBtn");
@@ -50,6 +49,7 @@
   let bondPath = null;
   let bondHearts = [];
   let bondDots = [];
+  let bondAnchors = null;
 
   const later = (fn, ms) => timers.push(setTimeout(fn, ms));
   const clearTimers = () => {
@@ -322,6 +322,10 @@ ${flameArt}
     makeDust();
     makeFlies();
     makeConstellation();
+    if (bondOn) {
+      bondAnchors = null;
+      paintBond();
+    }
   }
 
   function makeStars() {
@@ -836,7 +840,6 @@ ${flameArt}
 
     updateParticles(dt);
     drawParticles();
-    if (bondOn) paintBond();
     rafId = requestAnimationFrame(frame);
   }
 
@@ -1135,6 +1138,8 @@ ${flameArt}
     bondSvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
 
     bondOn = true;
+    bondAnchors = null;
+    captureBondAnchors();
     paintBond();
     void bondSvg.getBoundingClientRect();
     bondSvg.classList.add("on");
@@ -1168,23 +1173,35 @@ ${flameArt}
     if (musicBtn.getAttribute("aria-pressed") === "true") Ambient.chime();
   }
 
+  // Capture the endpoints once. Reading bounding boxes every frame made the
+  // line chase the krathongs' bob animation (and forced a layout each frame).
+  function captureBondAnchors() {
+    const tagA = $('[data-tag="a"]', layer);
+    const tagB = $('[data-tag="b"]', layer);
+    if (!tagA || !tagB) {
+      bondAnchors = null;
+      return;
+    }
+    const ra = tagA.getBoundingClientRect();
+    const rb = tagB.getBoundingClientRect();
+    bondAnchors = {
+      ax: ra.left + ra.width / 2,
+      ay: ra.top + 1,
+      bx: rb.left + rb.width / 2,
+      by: rb.top + 1,
+    };
+  }
+
   function paintBond() {
     if (!bondOn || !bondPath) return;
     const vb = bondSvg.viewBox.baseVal;
     if (vb.width !== W || vb.height !== H) {
       bondSvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
     }
+    if (!bondAnchors) captureBondAnchors();
+    if (!bondAnchors) return;
 
-    const tagA = $('[data-tag="a"]', layer);
-    const tagB = $('[data-tag="b"]', layer);
-    if (!tagA || !tagB) return;
-
-    const ra = tagA.getBoundingClientRect();
-    const rb = tagB.getBoundingClientRect();
-    const ax = ra.left + ra.width / 2;
-    const bx = rb.left + rb.width / 2;
-    const ay = ra.top + 1;
-    const by = rb.top + 1;
+    const { ax, ay, bx, by } = bondAnchors;
     const mx = (ax + bx) / 2;
     const my = Math.min(ay, by) - Math.max(32, Math.min(64, W * 0.05));
 
@@ -1212,6 +1229,7 @@ ${flameArt}
 
   function resetBond() {
     bondOn = false;
+    bondAnchors = null;
     bondPath = null;
     bondHearts = [];
     bondDots = [];
@@ -1316,80 +1334,6 @@ ${flameArt}
       if (particles[i].type === "rain") particles.splice(i, 1);
     }
     $$(".special-lanterns", lanternBox).forEach((el) => el.remove());
-  }
-
-  /* ── Sky lanterns ───────────────────────────── */
-  let skyTimerFade = null;
-  let skyTimerRemove = null;
-
-  function clearSkyLanterns() {
-    clearTimeout(skyTimerFade);
-    clearTimeout(skyTimerRemove);
-    skyTimerFade = null;
-    skyTimerRemove = null;
-    $$(".sky-lanterns", lanternBox).forEach((el) => el.remove());
-  }
-
-  function spawnSkyLanterns() {
-    clearSkyLanterns();
-    if (reduced) return;
-
-    const box = document.createElement("div");
-    box.className = "sky-lanterns";
-
-    const makeLantern = (x, size, dur, delay, opacity, main) => {
-      const el = document.createElement("div");
-      el.className = "lantern lamp" + (main ? " sky-main" : "");
-      el.style.setProperty("--x", x.toFixed(2) + "%");
-      el.style.setProperty("--s", size.toFixed(1) + "px");
-      el.style.setProperty("--dur", dur.toFixed(1) + "s");
-      el.style.setProperty("--delay", delay.toFixed(2) + "s");
-      el.style.setProperty("--sway", (-Math.random() * 7).toFixed(1) + "s");
-      el.style.setProperty("--o", opacity.toFixed(2));
-      el.innerHTML = '<span class="lamp-body"><span class="lamp-core"></span></span>';
-      return el;
-    };
-
-    // โคมใหญ่ตรงกลางจอ
-    box.appendChild(makeLantern(50, W < 520 ? 52 : 64, 21, 0.2, 0.95, true));
-
-    // โคมเล็กเป็นเพื่อนรอบ ๆ
-    const companions = W < 520 ? 4 : 7;
-    for (let i = 0; i < companions; i++) {
-      const left = i % 2 === 0;
-      const x = left ? 10 + Math.random() * 26 : 64 + Math.random() * 26;
-      box.appendChild(
-        makeLantern(
-          x,
-          22 + Math.random() * 18,
-          11 + Math.random() * 5,
-          Math.random() * 1.4,
-          0.65 + Math.random() * 0.3,
-          false
-        )
-      );
-    }
-
-    lanternBox.appendChild(box);
-    skyTimerFade = setTimeout(() => box.classList.add("fade"), 17000);
-    skyTimerRemove = setTimeout(() => box.remove(), 19000);
-  }
-
-  let skyUsed = false;
-
-  function releaseSkyLanterns() {
-    if (skyUsed) return;
-    skyUsed = true;
-
-    spawnSkyLanterns();
-    toast("🕯️ ปล่อยโคมลอยขึ้นฟ้าแล้ว", 3600);
-    if (musicBtn.getAttribute("aria-pressed") === "true") Ambient.chime();
-
-    // ใช้ได้ครั้งเดียว: ปุ่มค่อย ๆ จางแล้วหายไปเลย
-    lanternBtn.classList.add("spent");
-    setTimeout(() => {
-      lanternBtn.hidden = true;
-    }, 320);
   }
 
   /* ── Story flow ─────────────────────────────── */
@@ -1644,8 +1588,6 @@ ${flameArt}
       setMusicUI(ok);
     }
   });
-
-  lanternBtn.addEventListener("click", releaseSkyLanterns);
 
   if (memoryBtn) memoryBtn.addEventListener("click", openMemory);
   const memoryClose = $("#memoryClose");
